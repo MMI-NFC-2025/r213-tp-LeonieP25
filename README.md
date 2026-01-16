@@ -1,3 +1,3 @@
-- Nom:
-- Prénom:
-- URL vercel: 
+- Nom: PRUNIAUX
+- Prénom: Léonie
+- URL Netlify: 
