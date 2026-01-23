@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Layout from "../layouts/Layout.astro";
+import OffreCard from '../components/OffreCard.astro';
 const offres = [
     {
         "adresse": "2821 Lake Sevilla, Palm Harbor, TX",
@@ -39,16 +40,38 @@ const offres = [
 ---
 
 <Layout titre="Offres">
-        <h1 class="text-2xl text-center">Offres</h1>
-        <p class="text-center">Découvrez nos offres exceptionnelles !</p>
-        <div>
-<ul>
-{ offres.map((offre) => 
-        <li>{offre.nomMaison}</li>
-    )
-}
-</div>
-	</Layout>
+    <h1 class="text-2xl text-center">Offres</h1>
+    <p class="text-center">Découvrez nos offres exceptionnelles !</p>
+    <button id="favori-button" class="bg-slate-600 rounded-lg text-white p-2 mb-4">Afficher les favoris</button>
+    <div id="offres-container">
+        {
+            offres.map(offre => (
+                <div class="offre" data-favori={offre.favori.toString()}>
+                    <OffreCard {...offre} />
+                </div>
+            ))
+        }
+    </div>
+    <script>
+        const button = document.getElementById('favori-button');
+        const offresContainer = document.getElementById('offres-container')!;
+        let showingFavoris = false;
+
+        button?.addEventListener('click', () => {
+            showingFavoris = !showingFavoris;
+            const offres: NodeListOf<HTMLElement> = offresContainer.querySelectorAll('.offre');
+            offres.forEach(offre => {
+                const isFavori = offre.getAttribute('data-favori') === 'true';
+                if (showingFavoris && !isFavori) {
+                    offre.style.display = 'none';
+                } else {
+                    offre.style.display = 'block';
+                }
+            });
+            button.textContent = showingFavoris ? 'Afficher toutes les offres' : 'Afficher les favoris';
+        });
+    </script>
+</Layout>
 
 
         

@@ -1,0 +1,9 @@
+---
+const { nomMaison, adresse, prix } = Astro.props;
+---
+
+<div style="border:1px solid #ccc; padding:16px; margin:8px; border-radius:8px;">
+	<h2>{nomMaison}</h2>
+    <p>{adresse}</p>
+    <p>Prix: ${prix}</p>
+</div>
