@@ -1,10 +1,12 @@
 ---
 import PBImage from "./PBImage.astro";
-const { nomMaison, adresse, prix, images, id } = Astro.props;
+const { nomMaison, adresse, prix, images, id, favoris } = Astro.props;
+const bgColor = favoris ? '#334155' : '#f8fafc';
+const textColor = favoris ? '#ffffff' : '#334155';
 ---
 
-<div style="border:2px solid #64748b; background:#f8fafc; box-shadow:0 2px 8px #e2e8f0; padding:18px 20px; margin:16px 0; border-radius:12px; max-width:350px;">
-    <h2 style="color:#334155; font-size:1.3em; margin-bottom:8px;">{nomMaison}</h2>
+<div style={`border:2px solid #64748b; background: ${bgColor}; box-shadow:0 2px 8px #e2e8f0; padding:18px 20px; margin:16px 0; border-radius:12px; max-width:350px;`}>
+    <h2 style={`color:${textColor}; font-size:1.3em; margin-bottom:8px;`}>{nomMaison}</h2>
     <PBImage record={Astro.props} imageField={images[0]} />
-    <a href={`/offres/${id}`}>Voir plus</a>
+    <a href={`/offres/${id}`} style={`color:${textColor};`}>Voir plus</a>
 </div>
