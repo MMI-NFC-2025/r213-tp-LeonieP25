@@ -1,8 +1,7 @@
 ---
-import '../styles/global.css';
-import Layout from "../layouts/Layout.astro";
-import OffreCard from '../components/OffreCard.astro';
-import { getOffres } from '../js/backend.mjs';
+import Layout from '../../layouts/Layout.astro';
+import OffreCard from '../../components/OffreCard.astro';
+import { getOffres } from '../../js/backend.mjs';
 const offres = await getOffres();
 ---
 
@@ -39,6 +38,3 @@ const offres = await getOffres();
         });
     </script>
 </Layout>
-
-
-        
