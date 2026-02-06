@@ -9,9 +9,9 @@ const offres = await getOffres();
         <h1 class="text-2xl text-center">Offres</h1>
         <p class="text-center">Découvrez nos offres exceptionnelles !</p>
         <div class="text-center my-4">
-            <a href="/offres/surface/80" class="underline text-blue-600 hover:text-blue-800">Voir les maisons de plus de 80 m²</a>
+            <a href="/offres/surface/80" class="inline-block text-white px-6 py-3 rounded-lg" style="background-color: #334155; hover:background-color: #1e293b;">Voir les maisons de plus de 80 m²</a>
         </div>
-    <button id="favori-button" class="bg-slate-600 rounded-lg text-white p-2 mb-4 mt-8">Afficher les favoris</button>
+    <button id="favori-button" class="rounded-lg text-white p-2 mb-4 mt-8" style="background-color: #334155; hover:background-color: #1e293b;">Afficher les favoris</button>
     <div id="offres-container">
         {
             offres.map(offre => (
