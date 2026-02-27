@@ -42,3 +42,15 @@ export async function addOffre(house) {
         };
     }
 }
+
+export async function filterByPrix(minPrix, maxPrix) {
+    try {
+        return await pb.collection('maison').getFullList({
+            filter: `prix >= ${minPrix} && prix <= ${maxPrix}`,
+            sort: '-created',
+        });
+    } catch (error) {
+        console.log('Une erreur est survenue en filtrant les maisons par prix', error);
+        return [];
+    }
+}

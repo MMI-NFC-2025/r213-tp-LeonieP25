@@ -1,20 +1,47 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import OffreCard from '../../components/OffreCard.astro';
-import { getOffres } from '../../js/backend.mjs';
-const offres = await getOffres();
+import { getOffres, filterByPrix } from '../../js/backend.mjs';
+
+let Offres;
+let message = '';
+if (Astro.request.method === "POST") {
+    const data = await Astro.request.formData();
+    const minPrix = parseInt(data.get("minPrix") as string);
+    const maxPrix = parseInt(data.get("maxPrix") as string);
+
+    if (minPrix > 0 && maxPrix > 0 && maxPrix > minPrix) {
+        Offres = await filterByPrix(minPrix, maxPrix);
+        if (Offres.length === 0) {
+            message = `Pas d'offres entre ${minPrix}€ et ${maxPrix}€`;
+        } else {
+            message = `Liste des offres entre ${minPrix}€ et ${maxPrix}€`;
+        }
+    } else {
+        message = "Veuillez entrer des valeurs valides pour le prix.";
+        Offres = await getOffres();
+    }
+} else {
+    Offres = await getOffres();
+}
 ---
 
 <Layout titre="Offres">
         <h1 class="text-2xl text-center">Offres</h1>
         <p class="text-center">Découvrez nos offres exceptionnelles !</p>
+        <form action="/offres" method="POST">
+            <input type="number" name="minPrix" placeholder="Prix minimum" />
+            <input type="number" name="maxPrix" placeholder="Prix maximum" />
+            <input type="submit" value="Filtrer par prix" />
+        </form>
+        {message && <p class="mt-2 p-2 border rounded-md text-center">{message}</p>}
         <div class="text-center my-4">
             <a href="/offres/surface/80" class="inline-block text-white px-6 py-3 rounded-lg" style="background-color: #334155; hover:background-color: #1e293b;">Voir les maisons de plus de 80 m²</a>
         </div>
     <button id="favori-button" class="rounded-lg text-white p-2 mb-4 mt-8" style="background-color: #334155; hover:background-color: #1e293b;">Afficher les favoris</button>
     <div id="offres-container">
         {
-            offres.map(offre => (
+            Offres.map(offre => (
                 <div class="offre" data-favori={offre.favoris.toString()}>
                     <OffreCard {...offre} />
                 </div>
