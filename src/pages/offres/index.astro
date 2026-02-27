@@ -29,12 +29,12 @@ if (Astro.request.method === "POST") {
 <Layout titre="Offres">
         <h1 class="text-2xl text-center">Offres</h1>
         <p class="text-center">Découvrez nos offres exceptionnelles !</p>
-        <form action="/offres" method="POST">
-            <input type="number" name="minPrix" placeholder="Prix minimum" />
-            <input type="number" name="maxPrix" placeholder="Prix maximum" />
-            <input type="submit" value="Filtrer par prix" />
+        <form action="/offres" method="POST" class="flex flex-wrap gap-2 justify-center items-center my-4">
+            <input type="number" name="minPrix" placeholder="Prix minimum" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
+            <input type="number" name="maxPrix" placeholder="Prix maximum" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
+            <input type="submit" value="Filtrer par prix" class="px-6 py-2 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer" style="background-color: #334155;" />
         </form>
-        {message && <p class="mt-2 p-2 border rounded-md text-center">{message}</p>}
+        {message && <p class="mt-2 p-3 border border-gray-300 rounded-md text-center bg-gray-50">{message}</p>}
         <div class="text-center my-4">
             <a href="/offres/surface/80" class="inline-block text-white px-6 py-3 rounded-lg" style="background-color: #334155; hover:background-color: #1e293b;">Voir les maisons de plus de 80 m²</a>
         </div>
