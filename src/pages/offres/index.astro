@@ -39,6 +39,9 @@ if (Astro.request.method === "POST") {
 <Layout titre="Offres">
         <h1 class="text-2xl text-center">Offres</h1>
         <p class="text-center">Découvrez nos offres exceptionnelles !</p>
+        <div class="text-center my-4">
+            <a href="/offres/add" class="inline-block text-white px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg" style="background-color: #334155;">+ Ajouter une nouvelle offre</a>
+        </div>
         <form action="/offres" method="POST" class="flex flex-wrap gap-2 justify-center items-center my-4">
             <input 
                 type="number" 
