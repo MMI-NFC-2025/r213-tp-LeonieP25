@@ -5,8 +5,32 @@ import { addOffre } from '../../js/backend.mjs';
 let message = '';
 if (Astro.request.method === "POST") {
     const formData = await Astro.request.formData();
-    const response = await addOffre(formData);
-    message = response.message;
+    
+    // Validations côté serveur
+    const nomMaison = formData.get("nomMaison") as string;
+    const prix = parseInt(formData.get("prix") as string);
+    const nbSdb = parseInt(formData.get("nbSdb") as string);
+    const nbChambres = parseInt(formData.get("nbChambres") as string);
+    const surface = parseInt(formData.get("surface") as string);
+    const image = formData.get("image") as File;
+    
+    // Vérifications de validation
+    if (!nomMaison || nomMaison.trim().length < 3) {
+        message = "Le nom de la maison doit contenir au moins 3 caractères.";
+    } else if (isNaN(prix) || prix <= 0 || prix > 10000000) {
+        message = "Le prix doit être un nombre positif inférieur à 10 millions.";
+    } else if (isNaN(nbSdb) || nbSdb < 0 || nbSdb > 20) {
+        message = "Le nombre de salles de bain doit être entre 0 et 20.";
+    } else if (isNaN(nbChambres) || nbChambres < 0 || nbChambres > 50) {
+        message = "Le nombre de chambres doit être entre 0 et 50.";
+    } else if (isNaN(surface) || surface <= 0) {
+        message = "La superficie doit être un nombre positif.";
+    } else if (image && image.size > 0 && image.size > 5 * 1024 * 1024) {
+        message = "L'image ne doit pas dépasser 5 Mo.";
+    } else {
+        const response = await addOffre(formData);
+        message = response.message;
+    }
 }
 ---
 
@@ -14,12 +38,60 @@ if (Astro.request.method === "POST") {
     <h1 class="text-2xl font-bold text-center mb-4">Ajouter une offre</h1>
     {message && <p class="mt-2 p-3 border border-gray-300 rounded-md text-center bg-gray-50">{message}</p>}
     <form action="/offres/add" method="POST" enctype="multipart/form-data" class="max-w-md mx-auto">
-        <input type="text" name="nomMaison" placeholder="Nom de la maison" required class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
-        <input type="number" name="prix" placeholder="Prix" class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
-        <input type="number" name="nbSdb" placeholder="Nombre de salles de bain" class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
-        <input type="number" name="nbChambres" placeholder="Nombre de chambres" class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
-        <input type="number" name="surface" placeholder="Superficie" class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
-        <input type="file" name="image" class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" />
+        <input 
+            type="text" 
+            name="nomMaison" 
+            placeholder="Nom de la maison" 
+            required 
+            minlength="3" 
+            maxlength="100"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" 
+        />
+        <input 
+            type="number" 
+            name="prix" 
+            placeholder="Prix" 
+            required
+            min="1" 
+            max="10000000" 
+            step="1"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" 
+        />
+        <input 
+            type="number" 
+            name="nbSdb" 
+            placeholder="Nombre de salles de bain" 
+            required
+            min="0" 
+            max="20" 
+            step="1"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" 
+        />
+        <input 
+            type="number" 
+            name="nbChambres" 
+            placeholder="Nombre de chambres" 
+            required
+            min="0" 
+            max="50" 
+            step="1"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" 
+        />
+        <input 
+            type="number" 
+            name="surface" 
+            placeholder="Superficie" 
+            required
+            min="1" 
+            step="1"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" 
+        />
+        <input 
+            type="file" 
+            name="image" 
+            accept="image/png, image/jpeg, image/jpg, image/webp"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700" 
+        />
         <button type="submit" class="w-full mt-4 px-6 py-3 text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg" style="background-color: #334155; hover:background-color: #1e293b;">Ajouter</button>
     </form>
 </Layout>
