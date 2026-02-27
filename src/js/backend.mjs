@@ -54,3 +54,21 @@ export async function filterByPrix(minPrix, maxPrix) {
         return [];
     }
 }
+
+export async function toggleFavoris(id, currentStatus) {
+    try {
+        await pb.collection('maison').update(id, {
+            favoris: !currentStatus
+        });
+        return {
+            success: true,
+            newStatus: !currentStatus
+        };
+    } catch (error) {
+        console.log('Une erreur est survenue en modifiant le favori', error);
+        return {
+            success: false,
+            newStatus: currentStatus
+        };
+    }
+}

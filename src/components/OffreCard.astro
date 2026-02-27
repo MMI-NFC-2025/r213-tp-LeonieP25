@@ -6,9 +6,72 @@ const textColor = favoris ? '#ffffff' : '#334155';
 const borderColor = favoris ? '#ffffff' : '#000000';
 ---
 
-<div style={`border:2px solid #64748b; background: ${bgColor}; box-shadow:0 2px 8px #e2e8f0; padding:18px 20px; margin:16px 0; border-radius:12px; max-width:350px;`}>
-    <h2 style={`color:${textColor}; font-size:1.3em; margin-bottom:8px;`}>{nomMaison}</h2>
+<div style={`border:2px solid #64748b; background: ${bgColor}; box-shadow:0 2px 8px #e2e8f0; padding:18px 20px; margin:16px 0; border-radius:12px; max-width:350px; position:relative;`} data-offre-id={id}>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h2 style={`color:${textColor}; font-size:1.3em; margin:0; flex:1;`}>{nomMaison}</h2>
+        <button 
+            class="favori-btn" 
+            data-id={id} 
+            data-favoris={favoris.toString()}
+            style={`background:none; border:none; cursor:pointer; font-size:1.5em; padding:0; margin-left:8px; color:#fbbf24;`}
+            aria-label="Ajouter aux favoris"
+        >
+            {favoris ? '★' : '☆'}
+        </button>
+    </div>
     <PBImage record={Astro.props} imageField={images[0]} />
     <p style={`color:${textColor}; font-size:1.1em; font-weight:600; margin-top:12px; margin-bottom:8px;`}>{prix}€</p>
     <a href={`/offres/${id}`} style={`display:inline-block; color:${textColor}; background-color:transparent; border:1px solid ${borderColor}; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:0.9em;`}>Voir plus</a>
 </div>
+
+<script>
+    document.addEventListener('click', async (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('favori-btn')) {
+            const button = target as HTMLButtonElement;
+            const id = button.dataset.id;
+            const currentFavoris = button.dataset.favoris === 'true';
+            
+            try {
+                const response = await fetch('/api/toggle-favoris', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, currentStatus: currentFavoris })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    button.dataset.favoris = result.newStatus.toString();
+                    button.textContent = result.newStatus ? '★' : '☆';
+                    
+                    // Mettre à jour le fond de la card
+                    const card = button.closest('[data-offre-id]') as HTMLElement;
+                    if (card) {
+                        card.style.background = result.newStatus ? '#334155' : '#f8fafc';
+                        const h2 = card.querySelector('h2') as HTMLElement;
+                        const p = card.querySelector('p') as HTMLElement;
+                        const a = card.querySelector('a') as HTMLElement;
+                        const textColor = result.newStatus ? '#ffffff' : '#334155';
+                        const borderColor = result.newStatus ? '#ffffff' : '#000000';
+                        if (h2) h2.style.color = textColor;
+                        if (p) p.style.color = textColor;
+                        if (a) {
+                            a.style.color = textColor;
+                            a.style.borderColor = borderColor;
+                        }
+                        // Mettre à jour l'attribut data-favori pour le filtre
+                        const offreDiv = card.closest('.offre') as HTMLElement;
+                        if (offreDiv) {
+                            offreDiv.dataset.favori = result.newStatus.toString();
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour du favori:', error);
+            }
+        }
+    });
+</script>
