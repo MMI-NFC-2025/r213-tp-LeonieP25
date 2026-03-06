@@ -1,9 +1,75 @@
 ---
 import '../styles/global.css';
 import Layout from "../layouts/Layout.astro";
+import OffreCard from "../components/OffreCard.astro";
+import { getFavoris } from "../js/backend.mjs";
+
+const favoris = await getFavoris();
 ---
 
 <Layout titre="Accueil">
-		<h1 class="text-2xl text-center">Accueil</h1>
-		<p class="text-center">Bienvenue sur notre site web !</p>
-	</Layout>
+	<h1 class="text-2xl text-center">Accueil</h1>
+	<p class="text-center">Bienvenue sur notre site web !</p>
+	
+	{favoris.length > 0 && (
+		<div class="mt-8">
+			<h2 class="text-xl text-center mb-6">Vos maisons favorites</h2>
+			<div style="max-width: 450px; margin: 0 auto; position: relative; padding: 0 50px;">
+				<button id="prev-btn" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 10; background: white; color: black; border: 1px solid black; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; line-height: 1;">‹</button>
+				<div style="overflow: hidden;">
+					<div id="carousel" style="display: flex; transition: transform 0.3s ease; min-height: 450px; align-items: center;">
+						{favoris.map((offre) => (
+							<div style="min-width: 100%; flex-shrink: 0; display: flex; justify-content: center;">
+								<OffreCard {...offre} />
+							</div>
+						))}
+					</div>
+				</div>
+			<button id="next-btn" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 10; background: white; color: black; border: 1px solid black; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; line-height: 1;">›</button>
+				<div id="carousel-dots" style="display: flex; justify-content: center; gap: 8px; margin-top: 16px;">
+					{favoris.map((_, index) => (
+						<button class="carousel-dot" data-index={index} style="width: 10px; height: 10px; border-radius: 50%; border: none; background: #cbd5e1; cursor: pointer;"></button>
+					))}
+				</div>
+			</div>
+		</div>
+	)}
+
+	<script>
+		const carousel = document.getElementById('carousel') as HTMLElement;
+		const prevBtn = document.getElementById('prev-btn');
+		const nextBtn = document.getElementById('next-btn');
+		const dots = document.querySelectorAll('.carousel-dot') as NodeListOf<HTMLElement>;
+		
+		if (carousel && prevBtn && nextBtn) {
+			let currentIndex = 0;
+			const totalItems = carousel.children.length;
+			
+			function updateCarousel() {
+				carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+				dots.forEach((dot, index) => {
+					dot.style.background = index === currentIndex ? '#334155' : '#cbd5e1';
+				});
+			}
+			
+			prevBtn.addEventListener('click', () => {
+				currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+				updateCarousel();
+			});
+			
+			nextBtn.addEventListener('click', () => {
+				currentIndex = (currentIndex + 1) % totalItems;
+				updateCarousel();
+			});
+			
+			dots.forEach((dot, index) => {
+				dot.addEventListener('click', () => {
+					currentIndex = index;
+					updateCarousel();
+				});
+			});
+			
+			updateCarousel();
+		}
+	</script>
+</Layout>

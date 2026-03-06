@@ -75,3 +75,15 @@ export async function toggleFavoris(id, currentStatus) {
 export async function setFavori(house) {
     await pb.collection('maison').update(house.id, {favoris: !house.favoris});
 }
+
+export async function getFavoris() {
+    try {
+        return await pb.collection('maison').getFullList({
+            filter: 'favoris = true',
+            sort: '-created',
+        });
+    } catch (error) {
+        console.log('Une erreur est survenue en lisant les favoris', error);
+        return [];
+    }
+}
