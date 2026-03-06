@@ -9,6 +9,7 @@ import netlify from '@astrojs/netlify';
 export default defineConfig({
   output: 'server',
   vite: {
+    // @ts-ignore
     plugins: [tailwindcss()]
   },
 
