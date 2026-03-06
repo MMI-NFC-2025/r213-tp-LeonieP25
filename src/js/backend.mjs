@@ -71,3 +71,7 @@ export async function toggleFavoris(id, currentStatus) {
         };
     }
 }
+
+export async function setFavori(house) {
+    await pb.collection('maison').update(house.id, {favoris: !house.favoris});
+}

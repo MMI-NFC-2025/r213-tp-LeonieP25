@@ -24,61 +24,46 @@ const borderColor = favoris ? '#ffffff' : '#000000';
 </div>
 
 <script>
-    document.addEventListener('click', async (e) => {
-        const target = e.target as HTMLElement;
-        if (target.classList.contains('favoriteButton') || target.closest('.favoriteButton')) {
-            const button = (target.classList.contains('favoriteButton') ? target : target.closest('.favoriteButton')) as HTMLButtonElement;
-            const offre = JSON.parse(button.dataset.offre || '{}');
-            const id = offre.id;
-            const currentFavoris = offre.favoris;
-            
-            try {
-                const response = await fetch('/api/toggle-favoris', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id, currentStatus: currentFavoris })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Mettre à jour l'image
-                    const img = button.querySelector('img');
-                    if (img) {
-                        img.src = result.newStatus ? '/favorite_filled.png' : '/favorite.png';
-                    }
-                    
-                    // Mettre à jour l'objet dans data-offre
-                    offre.favoris = result.newStatus;
-                    button.dataset.offre = JSON.stringify(offre);
-                    
-                    // Mettre à jour le fond de la card
-                    const card = button.closest('[data-offre-id]') as HTMLElement;
-                    if (card) {
-                        card.style.background = result.newStatus ? '#334155' : '#f8fafc';
-                        const h2 = card.querySelector('h2') as HTMLElement;
-                        const p = card.querySelector('p') as HTMLElement;
-                        const a = card.querySelector('a') as HTMLElement;
-                        const textColor = result.newStatus ? '#ffffff' : '#334155';
-                        const borderColor = result.newStatus ? '#ffffff' : '#000000';
-                        if (h2) h2.style.color = textColor;
-                        if (p) p.style.color = textColor;
-                        if (a) {
-                            a.style.color = textColor;
-                            a.style.borderColor = borderColor;
-                        }
-                        // Mettre à jour l'attribut data-favori pour le filtre
-                        const offreDiv = card.closest('.offre') as HTMLElement;
-                        if (offreDiv) {
-                            offreDiv.dataset.favori = result.newStatus.toString();
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Erreur lors de la mise à jour du favori:', error);
+    //@ts-nocheck
+    import { setFavori } from "../js/backend.mjs";
+    const favoriteButtons = document.querySelectorAll(".favoriteButton");
+
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+            const offreData = JSON.parse(button.dataset.offre || '{}');
+            const newFavori = !offreData.favoris;
+
+            await setFavori(offreData);
+
+            const favIcon = button.querySelector('#favorite-icon');
+            if (favIcon) {
+                favIcon.src = newFavori ? "/favorite_filled.png" : "/favorite.png";
             }
-        }
+            offreData.favoris = newFavori;
+            button.dataset.offre = JSON.stringify(offreData);
+
+            // Mettre à jour le fond de la card
+            const card = button.closest('[data-offre-id]');
+            if (card) {
+                card.style.background = newFavori ? '#334155' : '#f8fafc';
+                const h2 = card.querySelector('h2');
+                const p = card.querySelector('p');
+                const a = card.querySelector('a');
+                const textColor = newFavori ? '#ffffff' : '#334155';
+                const borderColor = newFavori ? '#ffffff' : '#000000';
+                if (h2) h2.style.color = textColor;
+                if (p) p.style.color = textColor;
+                if (a) {
+                    a.style.color = textColor;
+                    a.style.borderColor = borderColor;
+                }
+            }
+
+            // Mettre à jour l'attribut data-favori pour le filtre
+            const offreDiv = button.closest('.offre');
+            if (offreDiv) {
+                offreDiv.setAttribute('data-favori', newFavori.toString());
+            }
+        });
     });
 </script>
