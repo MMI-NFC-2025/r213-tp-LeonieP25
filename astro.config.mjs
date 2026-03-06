@@ -13,5 +13,19 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  adapter: netlify()
+  adapter: netlify(),
+  
+  image: {
+    domains: ['127.0.0.1', 'agence.leonie-pruniaux.fr'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1'
+      },
+      {
+        protocol: 'https',
+        hostname: 'agence.leonie-pruniaux.fr'
+      }
+    ]
+  }
 });

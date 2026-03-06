@@ -1,0 +1,73 @@
+---
+import '../../styles/global.css';
+import Layout from "../../layouts/Layout.astro";
+import OffreCard from "../../components/OffreCard.astro";
+import PBImage from "../../components/PBImage.astro";
+import { getAgent, getOffresByAgent } from "../../js/backend.mjs";
+
+const { id } = Astro.params;
+
+if (!id) {
+    return Astro.redirect('/agents');
+}
+
+const agent = await getAgent(id);
+
+if (!agent) {
+    return Astro.redirect('/agents');
+}
+
+const offres = await getOffresByAgent(id);
+---
+
+<Layout titre={`${agent.prenom} ${agent.nom}`}>
+    <div class="max-w-6xl mx-auto px-4">
+        <a href="/agents" class="inline-block mb-6 text-slate-700 hover:text-slate-900">← Retour aux agents</a>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-6 items-center">
+                {agent.photo && (
+                    <div class="shrink-0">
+                        <PBImage record={agent} imageField={agent.photo} />
+                    </div>
+                )}
+                <div class="flex-1">
+                    <h1 class="text-3xl font-bold mb-2" style="color: #334155;">
+                        {agent.prenom} {agent.nom}
+                    </h1>
+                    {agent.email && (
+                        <p class="text-gray-700 mb-1">
+                            <span class="font-medium">Email:</span> <a href={`mailto:${agent.email}`} class="text-blue-600 hover:underline">{agent.email}</a>
+                        </p>
+                    )}
+                    {agent.telephone && (
+                        <p class="text-gray-700 mb-1">
+                            <span class="font-medium">Téléphone:</span> <a href={`tel:${agent.telephone}`} class="text-blue-600 hover:underline">{agent.telephone}</a>
+                        </p>
+                    )}
+                    {agent.specialite && (
+                        <p class="text-gray-600 mt-3 italic">
+                            Spécialité: {agent.specialite}
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-semibold mb-6" style="color: #334155;">
+            Offres de {agent.prenom} {agent.nom} ({offres.length})
+        </h2>
+
+        {offres.length === 0 ? (
+            <p class="text-center text-gray-500 py-8">Cet agent n'a pas encore d'offres.</p>
+        ) : (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {offres.map((offre) => (
+                    <div class="offre" data-favori={offre.favoris.toString()}>
+                        <OffreCard {...offre} />
+                    </div>
+                ))}
+            </div>
+        )}
+    </div>
+</Layout>

@@ -5,7 +5,7 @@ const {
     record,
     imageField,
     width = 300,  
-    height = 500, 
+    height = 300, 
 } = Astro.props;
 const imageURL = await getImageUrl(record, imageField);
 ---
@@ -16,6 +16,6 @@ const imageURL = await getImageUrl(record, imageField);
         alt={record.nomMaison || 'Image'}
         width={width}
         height={height}
-        inferSize={true}
+        style="object-fit: cover; border-radius: 8px;"
     />
 }

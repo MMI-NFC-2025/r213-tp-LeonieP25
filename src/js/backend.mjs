@@ -87,3 +87,36 @@ export async function getFavoris() {
         return [];
     }
 }
+
+export async function getAgents() {
+    try {
+        return await pb.collection('agent').getFullList({
+            sort: 'nom',
+        });
+    } catch (error) {
+        console.log('Une erreur est survenue en lisant la liste des agents', error);
+        return [];
+    }
+}
+
+export async function getAgent(id) {
+    try {
+        const data = await pb.collection('agent').getOne(id);
+        return data;
+    } catch (error) {
+        console.log('Une erreur est survenue en lisant l\'agent', error);
+        return null;
+    }
+}
+
+export async function getOffresByAgent(agentId) {
+    try {
+        return await pb.collection('maison').getFullList({
+            filter: `agent = "${agentId}"`,
+            sort: '-created',
+        });
+    } catch (error) {
+        console.log('Une erreur est survenue en lisant les offres de l\'agent', error);
+        return [];
+    }
+}
